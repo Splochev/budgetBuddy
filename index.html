@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BudgetBudy – Sign In</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./css/app.css" />
+    <style>
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div x-data="authPage()" style="width: 100%; max-width: 560px">
+      <div class="auth-card">
+        <!-- Logo -->
+        <div class="auth-logo">
+          <svg style="width:32px;height:32px;color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="6" width="20" height="14" rx="2"/>
+            <path d="M2 10h20"/>
+            <circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/>
+            <path d="M7 6V4a1 1 0 011-1h8a1 1 0 011 1v2"/>
+          </svg>
+          <span>BudgetBudy</span>
+        </div>
+
+        <!-- Language toggle -->
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+          <button
+            class="btn btn-ghost btn-sm"
+            @click="setLang(lang === 'en' ? 'bg' : 'en')"
+            style="font-size:0.75rem;font-weight:700;padding:4px 10px;letter-spacing:0.5px"
+            x-text="lang === 'en' ? 'EN' : 'BG'"
+          ></button>
+        </div>
+
+        <!-- Error -->
+        <div x-show="error" class="error-box" x-text="error"></div>
+
+        <!-- Form -->
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:4px" x-text="t('welcome_back')"></h2>
+        <p style="color:var(--text3);font-size:0.85rem;margin-bottom:20px" x-text="t('sign_in_desc')"></p>
+
+        <div class="form-group">
+          <label class="form-label" x-text="t('label_email')"></label>
+          <input
+            type="email"
+            x-model="email"
+            @keyup.enter="login()"
+            :placeholder="t('placeholder_email')"
+            style="width:100%"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" x-text="t('label_password')"></label>
+          <input
+            type="password"
+            x-model="password"
+            @keyup.enter="login()"
+            :placeholder="t('placeholder_password')"
+            style="width:100%"
+          />
+        </div>
+
+        <button
+          class="btn btn-primary"
+          style="width:100%;justify-content:center;padding:10px 16px"
+          @click="login()"
+          :disabled="loading"
+        >
+          <svg x-show="loading" style="width:14px;height:14px;animation:pulse 1s infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          <span x-text="loading ? t('btn_signing_in') : t('btn_sign_in')"></span>
+        </button>
+      </div>
+    </div>
+
+    <script type="module">
+      import Alpine from "https://cdn.jsdelivr.net/npm/alpinejs@3/dist/module.esm.js";
+      import { auth } from "./js/firebase.js";
+      import { translations } from "./js/i18n.js";
+      import {
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+
+      // If already logged in, go straight to budget page
+      onAuthStateChanged(auth, (user) => {
+        if (user) window.location.href = "./budget.html";
+      });
+
+      Alpine.data("authPage", () => ({
+        email: "",
+        password: "",
+        loading: false,
+        error: "",
+        lang: localStorage.getItem("budgetbudy-lang") || "en",
+
+        t(key) {
+          const tr = translations[this.lang] ?? translations.en;
+          return (tr[key] ?? translations.en[key]) ?? key;
+        },
+
+        setLang(code) {
+          this.lang = code;
+          localStorage.setItem("budgetbudy-lang", code);
+        },
+
+        async login() {
+          this.error = "";
+          if (!this.email || !this.password) {
+            this.error = this.t("error_fill_fields");
+            return;
+          }
+          this.loading = true;
+          try {
+            await signInWithEmailAndPassword(auth, this.email, this.password);
+            window.location.href = "./budget.html";
+          } catch (e) {
+            this.error = this._friendly(e.code);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        _friendly(code) {
+          const map = {
+            "auth/user-not-found": this.t("error_user_not_found"),
+            "auth/wrong-password": this.t("error_wrong_password"),
+            "auth/invalid-credential": this.t("error_invalid_credential"),
+            "auth/too-many-requests": this.t("error_too_many_requests"),
+            "auth/network-request-failed": this.t("error_network"),
+          };
+          return map[code] ?? this.t("error_generic");
+        },
+      }));
+
+      Alpine.start();
+    </script>
+  </body>
+</html>

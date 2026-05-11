@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BudgetBudy — Seed Data</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg"/>
+  <link rel="stylesheet" href="./css/app.css"/>
+  <style>
+    body { display:flex; align-items:flex-start; justify-content:center; min-height:100vh; padding:40px 24px; background:var(--bg); }
+    .seed-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:36px 40px; max-width:680px; width:100%; box-shadow:var(--shadow); animation:fadeIn 0.3s; }
+    .log-item { display:flex; align-items:center; gap:10px; padding:9px 14px; border-bottom:1px solid var(--border); font-size:0.84rem; }
+    .log-item:last-child { border-bottom:none; }
+    .log-item.done { color:var(--accent); }
+    .log-item.error { color:var(--danger); }
+    .log-item.running { color:var(--text2); }
+    .section-title { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.6px; color:var(--text3); font-weight:600; padding:10px 14px 6px; border-bottom:1px solid var(--border); }
+    .breakdown-row { display:flex; justify-content:space-between; align-items:center; padding:7px 14px; font-size:0.84rem; border-bottom:1px solid var(--border); }
+    .breakdown-row:last-child { border-bottom:none; }
+    .spin { animation:spin 1s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div style="width:100%;max-width:680px" x-data="seedPage()">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px">
+      <svg style="width:28px;height:28px;color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+        <circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+      <h1 style="font-size:1.3rem;font-weight:800;color:var(--accent)">BudgetBudy — Seed Data</h1>
+      <a href="./budget.html" style="margin-left:auto;font-size:0.8rem;color:var(--text3)">← Back to app</a>
+    </div>
+
+    <!-- ── Not logged in ──────────────────────────────────── -->
+    <div x-show="!user" class="seed-card">
+      <h2 style="font-size:1rem;font-weight:700;margin-bottom:4px">Sign in to seed data</h2>
+      <p style="color:var(--text3);font-size:0.85rem;margin-bottom:20px">You must be authenticated to write to Firestore.</p>
+      <div x-show="loginError" class="error-box" x-text="loginError"></div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" x-model="email" style="width:100%" placeholder="you@example.com" @keyup.enter="login()"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" x-model="password" style="width:100%" @keyup.enter="login()"/>
+      </div>
+      <button class="btn btn-primary" @click="login()" :disabled="signingIn" style="width:100%;justify-content:center;padding:10px">
+        <span x-text="signingIn ? 'Signing in…' : 'Sign In'"></span>
+      </button>
+    </div>
+
+    <!-- ── Logged in ──────────────────────────────────────── -->
+    <div x-show="user">
+
+      <!-- Expected breakdown preview -->
+      <div class="seed-card" style="margin-bottom:20px">
+        <h2 style="font-size:1rem;font-weight:700;margin-bottom:16px">What will be seeded</h2>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:16px">
+          <div class="section-title">💰 Balance & Net Money Breakdown</div>
+          <div class="breakdown-row"><span>Bank Balance</span><span style="font-weight:700;color:var(--accent)">16438.7 €</span></div>
+          <div class="breakdown-row"><span style="color:var(--text3)">− Unpaid obligations</span><span style="color:var(--danger)">−1,408.50 €</span></div>
+          <div class="breakdown-row" style="padding-left:28px;font-size:0.78rem;color:var(--text3)"><span>Credits (not yet paid)</span><span>942 €</span></div>
+          <div class="breakdown-row" style="padding-left:28px;font-size:0.78rem;color:var(--text3)"><span>Food remaining this month</span><span>240 €</span></div>
+          <div class="breakdown-row" style="padding-left:28px;font-size:0.78rem;color:var(--text3)"><span>Bills (7 items, not yet paid)</span><span>226.50 €</span></div>
+          <div class="breakdown-row"><span style="color:var(--text3)">− Wedding allocation</span><span style="color:var(--warning)">−9,093.47 €</span></div>
+          <div class="breakdown-row"><span style="color:var(--text3)">− Car allocation</span><span style="color:var(--warning)">−3,386.00 €</span></div>
+          <div class="breakdown-row" style="background:var(--surface3)"><span style="font-weight:800">= FREE MONEY</span><span style="font-weight:800;color:var(--accent)">2,937.73 €</span></div>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:16px">
+          <div class="section-title">📥 Income Sources (monthly)</div>
+          <div class="breakdown-row"><span>Salary</span><span style="color:var(--accent)">3,587.00 €</span></div>
+          <div class="breakdown-row"><span>Food Vouchers</span><span style="color:var(--accent)">76.69 €</span></div>
+          <div class="breakdown-row"><span>Rent</span><span style="color:var(--accent)">271.78 €</span></div>
+          <div class="breakdown-row" style="background:var(--surface3)"><span style="font-weight:700">Total monthly income</span><span style="font-weight:700;color:var(--accent)">3,935.47 €</span></div>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:16px">
+          <div class="section-title">📌 Fixed Monthly Expenses</div>
+          <div class="breakdown-row"><span>Заеми (Credits)</span><span>942.00 €</span></div>
+          <div class="breakdown-row"><span>Храна (Food Budget)</span><span>360.00 €</span></div>
+          <div class="breakdown-row"><span>Сметки (Bills)</span><span>226.50 €</span></div>
+          <div class="breakdown-row" style="padding-left:28px;font-size:0.78rem;color:var(--text3)"><span>A1, YouTube, Вход, Котки, Ток, Вода, ТЕЦ</span></div>
+          <div class="breakdown-row"><span>Акции (Stocks) <span class="badge badge-accent" style="font-size:0.65rem">✓ Invested May</span></span><span>1,500.00 €</span></div>
+          <div class="breakdown-row" style="background:var(--surface3)"><span style="font-weight:700">Net monthly</span><span style="font-weight:700;color:var(--accent)">906.97 €</span></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+            <div class="section-title">💍 Wedding (12 categories)</div>
+            <div class="breakdown-row"><span>Total budget</span><span>15,000.00 €</span></div>
+            <div class="breakdown-row"><span>Target spend</span><span>13,006.41 €</span></div>
+            <div class="breakdown-row"><span>Already paid</span><span style="color:var(--warning)">5,906.53 €</span></div>
+            <div class="breakdown-row" style="background:var(--surface3)"><span style="font-weight:700">Locked allocation</span><span style="font-weight:700;color:var(--accent)">9,093.47 €</span></div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+            <div class="section-title">🚗 Car Budget (9 items)</div>
+            <div class="breakdown-row"><span>Total budget</span><span>4,020.00 €</span></div>
+            <div class="breakdown-row"><span>Already spent</span><span style="color:var(--warning)">634.00 €</span></div>
+            <div class="breakdown-row" style="background:var(--surface3)"><span style="font-weight:700">Locked allocation</span><span style="font-weight:700;color:var(--accent)">3,386.00 €</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seed button & log -->
+      <div class="seed-card">
+        <div style="margin-bottom:18px">
+          <h2 style="font-size:1rem;font-weight:700;margin-bottom:2px">Ready to seed</h2>
+          <p style="color:var(--text3);font-size:0.8rem">Signed in as <strong x-text="user?.email"></strong></p>
+        </div>
+
+        <!-- Editable balance — the only value that changes over time -->
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px">
+          <label class="form-label" style="margin-bottom:6px">💰 Current bank balance (€) — enter your real balance today</label>
+          <input type="number" step="0.01" x-model="bankBalance"
+            style="width:100%;font-size:1.1rem;font-weight:700;padding:10px 14px"
+            placeholder="e.g. 16438.70"/>
+          <p style="font-size:0.75rem;color:var(--text3);margin-top:6px">This is the only value you need to update. Everything else (categories, fixed, projects) is seeded as-is.</p>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+          <!-- Clear & Re-seed -->
+          <button class="btn btn-danger" @click="clearAndSeed()" :disabled="running || !bankBalance" style="gap:8px;flex:1;justify-content:center">
+            <svg x-show="running && mode==='reset'" class="spin" style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+            <svg x-show="!(running && mode==='reset')" style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.85"/>
+            </svg>
+            <span x-text="(running && mode==='reset') ? 'Clearing & reseeding…' : '🗑️ Clear & Re-seed'"></span>
+          </button>
+          <!-- First-time seed -->
+          <button class="btn btn-secondary" @click="seed()" :disabled="running || done || !bankBalance" style="gap:8px">
+            <svg x-show="running && mode==='seed'" class="spin" style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+            <span x-text="done ? '✅ Done!' : (running && mode==='seed') ? 'Seeding…' : '🌱 Seed (fresh account only)'"></span>
+          </button>
+        </div>
+
+        <div x-show="!bankBalance && !running" style="font-size:0.8rem;color:var(--danger);margin-bottom:12px">
+          ↑ Enter your current bank balance first
+        </div>
+
+        <!-- Log output -->
+        <div x-show="log.length > 0" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;max-height:400px;overflow-y:auto">
+          <template x-for="entry in log" :key="entry.id">
+            <div class="log-item" :class="entry.status">
+              <span x-text="entry.status === 'done' ? '✅' : entry.status === 'error' ? '❌' : '⏳'"></span>
+              <span x-text="entry.msg"></span>
+            </div>
+          </template>
+        </div>
+
+        <div x-show="done" style="margin-top:20px;text-align:center">
+          <a href="./budget.html" class="btn btn-primary" style="display:inline-flex">Open BudgetBudy →</a>
+        </div>
+      </div>
+
+      <!-- Firestore rules reminder -->
+      <div style="margin-top:16px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:var(--radius-sm);padding:14px 16px;font-size:0.8rem;color:var(--text2)">
+        <strong style="color:#6366f1">🔒 Firestore rules reminder:</strong> Make sure your rules include
+        <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">settings</code> and
+        <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">incomeSources</code> collections.
+        The simplest way is to replace the per-user subcollection rules with:
+        <code style="display:block;margin-top:8px;background:var(--surface2);padding:8px 10px;border-radius:4px;white-space:pre-wrap">match /users/{uid}/{allData=**} {
+  allow read, write: if request.auth != null
+                     && request.auth.uid == uid;
+}</code>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import Alpine from "https://cdn.jsdelivr.net/npm/alpinejs@3/dist/module.esm.js";
+    import { auth, db } from "./js/firebase.js";
+    import {
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+    import {
+      collection, doc, addDoc, setDoc, getDocs, deleteDoc,
+    } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+    const MONTH = "2026-05";
+
+    // Delete every document in a Firestore collection
+    async function clearCol(colRef) {
+      const snap = await getDocs(colRef);
+      await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+    }
+
+    Alpine.data("seedPage", () => ({
+      user: null,
+      email: "",
+      password: "",
+      loginError: "",
+      signingIn: false,
+      running: false,
+      done: false,
+      mode: "",          // 'reset' | 'seed'
+      bankBalance: "",   // filled in by user before seeding
+      log: [],
+
+      init() {
+        onAuthStateChanged(auth, (u) => { this.user = u; });
+      },
+
+      async login() {
+        this.loginError = "";
+        this.signingIn = true;
+        try {
+          await signInWithEmailAndPassword(auth, this.email, this.password);
+        } catch (e) {
+          this.loginError = e.message;
+        } finally {
+          this.signingIn = false;
+        }
+      },
+
+      addLog(msg) {
+        const id = Math.random().toString(36).slice(2);
+        this.log = [...this.log, { id, msg, status: "running" }];
+        return id;
+      },
+      ok(id) { this.log = this.log.map(l => l.id === id ? { ...l, status: "done" } : l); },
+      fail(id, err) { this.log = this.log.map(l => l.id === id ? { ...l, msg: l.msg + " — " + err, status: "error" } : l); },
+
+      async clearAndSeed() {
+        if (!confirm("This will DELETE all your BudgetBudy data and re-seed from scratch. Continue?")) return;
+        this.log = [];
+        this.done = false;
+        this.running = true;
+        this.mode = "reset";
+        const uid = this.user.uid;
+        const col = (name) => collection(db, "users", uid, name);
+
+        try {
+          // 1. Wipe localStorage cache so the app doesn't serve stale data
+          const lid = this.addLog("Clearing local cache and Firestore data…");
+          const cacheKeys = Object.keys(localStorage).filter(k => k.startsWith("budgetbudy:"));
+          cacheKeys.forEach(k => localStorage.removeItem(k));
+
+          // 2. Delete all Firestore documents
+          await Promise.all([
+            clearCol(col("incomeSources")),
+            clearCol(col("fixedExpenses")),
+            clearCol(col("categories")),
+            clearCol(col("projects")),
+            clearCol(col("transactions")),
+            deleteDoc(doc(db, "users", uid, "settings", "main")).catch(() => {}),
+          ]);
+          this.ok(lid);
+        } catch (e) {
+          this.fail(this.log[this.log.length - 1]?.id, e.message);
+          this.running = false;
+          return;
+        }
+
+        // 3. Seed fresh with the user-entered balance
+        this.mode = "seed";
+        await this.seed();
+      },
+
+      async seed() {
+        this.log = this.log.filter(l => l.status !== "running"); // keep clear log if came from clearAndSeed
+        this.running = true;
+        this.mode = "seed";
+        const uid = this.user.uid;
+        const col = (name) => collection(db, "users", uid, name);
+
+        try {
+          // ── 1. Settings (bank balance snapshot) ───────────────
+          let lid = this.addLog("Settings: bank balance 16438.70€…");
+          await setDoc(doc(db, "users", uid, "settings", "main"), {
+            totalBalance: 16438.70,
+            currency: "€",
+            balanceDate: "2026-05-11",
+          });
+          this.ok(lid);
+
+          // ── 2. Income sources ─────────────────────────────────
+          lid = this.addLog("Income sources: Salary 3,587 € | Vouchers 76.69 € | Rent 271.78 €…");
+          await addDoc(col("incomeSources"), { name: "Salary",        amount: 3587,   active: true, order: 1 });
+          await addDoc(col("incomeSources"), { name: "Food Vouchers", amount: 76.69,  active: true, order: 2 });
+          await addDoc(col("incomeSources"), { name: "Rent",          amount: 271.78, active: true, order: 3 });
+          this.ok(lid);
+
+          // ── 3. Fixed expenses ──────────────────────────────────
+          lid = this.addLog("Fixed: Заеми 942 € (not yet paid this month)…");
+          await addDoc(col("fixedExpenses"), {
+            name: "Заеми (Credits)",
+            amount: 942,
+            type: "credit",
+            active: true,
+            paidMonth: null,   // ← not yet paid
+            items: [],
+            order: 1,
+          });
+          this.ok(lid);
+
+          lid = this.addLog("Fixed: Храна 360 €/month food budget (240 € remaining)…");
+          await addDoc(col("fixedExpenses"), {
+            name: "Храна (Food Budget)",
+            amount: 360,
+            type: "food",
+            active: true,
+            paidMonth: null,
+            items: [],
+            order: 2,
+            // food remaining is tracked via transactions — 360 - food transactions this month
+          });
+          this.ok(lid);
+
+          lid = this.addLog("Fixed: Сметки 226.50 € — 7 bill items (all unpaid)…");
+          await addDoc(col("fixedExpenses"), {
+            name: "Сметки (Bills)",
+            amount: 226.50,
+            type: "bills",
+            active: true,
+            paidMonth: null,
+            items: [
+              { id: "b1", name: "A1",              amount: 31.50, paidMonth: null },
+              { id: "b2", name: "YouTube Premium", amount: 13.00, paidMonth: null },
+              { id: "b3", name: "Вход",            amount: 7.00,  paidMonth: null },
+              { id: "b4", name: "Котки",           amount: 35.00, paidMonth: null },
+              { id: "b5", name: "Ток",             amount: 75.00, paidMonth: null },
+              { id: "b6", name: "Вода",            amount: 25.00, paidMonth: null },
+              { id: "b7", name: "ТЕЦ",             amount: 40.00, paidMonth: null },
+            ],
+            order: 3,
+          });
+          this.ok(lid);
+
+          lid = this.addLog("Fixed: Акции 1,500 € — already invested May 2026 ✓…");
+          await addDoc(col("fixedExpenses"), {
+            name: "Акции (Stocks)",
+            amount: 1500,
+            type: "investment",
+            active: true,
+            paidMonth: MONTH,  // ← already invested this month
+            items: [],
+            order: 4,
+          });
+          this.ok(lid);
+
+          // ── 4. Categories ──────────────────────────────────────
+          lid = this.addLog("Categories: income & expense…");
+          await addDoc(col("categories"), { name: "Salary",           type: "income",  color: "#22c55e", order: 1 });
+          await addDoc(col("categories"), { name: "Food Vouchers",    type: "income",  color: "#84cc16", order: 2 });
+          await addDoc(col("categories"), { name: "Rental Income",    type: "income",  color: "#14b8a6", order: 3 });
+          await addDoc(col("categories"), { name: "Bills & Utilities",type: "expense", color: "#f59e0b", order: 1 });
+          await addDoc(col("categories"), { name: "Food & Groceries", type: "expense", color: "#f97316", order: 2 });
+          await addDoc(col("categories"), { name: "Credits / Loans",  type: "expense", color: "#ef4444", order: 3 });
+          await addDoc(col("categories"), { name: "Investments",      type: "expense", color: "#8b5cf6", order: 4 });
+          await addDoc(col("categories"), { name: "Wedding",          type: "expense", color: "#ec4899", order: 5 });
+          await addDoc(col("categories"), { name: "Car",              type: "expense", color: "#3b82f6", order: 6 });
+          await addDoc(col("categories"), { name: "Other",            type: "both",    color: "#6b7280", order: 7 });
+          this.ok(lid);
+
+          // ── 5. Wedding project ─────────────────────────────────
+          lid = this.addLog("Project: Wedding 26.09.2026 — 12 budget items, 5,906.53 € paid so far…");
+          await addDoc(col("projects"), {
+            name: "💍 Сватба — 26.09.2026",
+            totalBudget:  15000,
+            targetBudget: 13006.41,
+            date: "2026-09-26",
+            description: "Total budget 15,000 € with buffer. Target spend 13,006.41 €.",
+            isAllocation: true,          // ← locks remaining from net balance
+            createdAt: new Date().toISOString(),
+            items: [
+              // budgeted = category total; spent = paid so far
+              { id: "w1",  category: "Фотограф",          budgeted: 1800.00, spent: 1400.00, notes: "900 € капаро + 500 € видеозаснемане" },
+              { id: "w2",  category: "Диджей",            budgeted: 1033.00, spent:  281.22, notes: "281.22 € капаро" },
+              { id: "w3",  category: "Украса",            budgeted: 1000.00, spent:  555.70, notes: "446.37 € капаро + 32.63 € + 76.70 € аксесоари за гостите" },
+              { id: "w4",  category: "Ресторант",         budgeted: 5815.80, spent: 1500.00, notes: "1,500 € капаро. Финална цена TBD." },
+              { id: "w5",  category: "Подаръци на гости", budgeted:  100.00, spent:   37.00, notes: "TBD" },
+              { id: "w6",  category: "Халки",             budgeted: 1300.00, spent: 1300.00, notes: "Платени изцяло" },
+              { id: "w7",  category: "Подаръци за кумове",budgeted:    0.00, spent:    0.00, notes: "" },
+              { id: "w8",  category: "Костюм",            budgeted:  250.00, spent:    0.00, notes: "" },
+              { id: "w9",  category: "Рокля",             budgeted:  800.00, spent:  400.00, notes: "400 € капаро" },
+              { id: "w10", category: "Алкохол",           budgeted:  380.00, spent:  380.00, notes: "Платени изцяло, без ракия" },
+              { id: "w11", category: "Торта",             budgeted:  500.00, spent:   25.00, notes: "25 € капаро" },
+              { id: "w12", category: "Документи",         budgeted:   27.61, spent:   27.61, notes: "Наем ритуална зала" },
+            ],
+          });
+          this.ok(lid);
+
+          // ── 6. Car project ─────────────────────────────────────
+          lid = this.addLog("Project: Car Budget — 9 items, 634 € spent, 3,386 € remaining…");
+          await addDoc(col("projects"), {
+            name: "🚗 Кола — Car Budget",
+            totalBudget: 4020,
+            date: "",
+            description: "One-time budget for new car setup expenses.",
+            isAllocation: true,          // ← locks remaining from net balance
+            createdAt: new Date().toISOString(),
+            items: [
+              { id: "c1", category: "Джанти",                      budgeted: 234, spent: 234, notes: "" },
+              { id: "c2", category: "Пожарогасител и Аптечка",     budgeted:  25, spent:  25, notes: "" },
+              { id: "c3", category: "Стойки за телефон",           budgeted:  10, spent:  10, notes: "" },
+              { id: "c4", category: "Блутут трансмитер",           budgeted:  15, spent:  15, notes: "" },
+              { id: "c5", category: "Навигация",                   budgeted:   0, spent:   0, notes: "TBD" },
+              { id: "c6", category: "Основа плафон",               budgeted:  20, spent:  20, notes: "" },
+              { id: "c7", category: "Монтаж на джанти",            budgeted: 110, spent: 110, notes: "" },
+              { id: "c8", category: "Винетка",                     budgeted:   0, spent:   0, notes: "TBD" },
+              { id: "c9", category: "Административни Такси",       budgeted: 220, spent: 220, notes: "" },
+            ],
+          });
+          this.ok(lid);
+
+          const doneId = this.addLog("All done! 🎉");
+          this.ok(doneId);
+          this.done = true;
+
+        } catch (e) {
+          const errId = this.addLog("❌ Seeding stopped: " + e.message);
+          this.fail(errId, "");
+        } finally {
+          this.running = false;
+        }
+      },
+    }));
+
+    Alpine.start();
+  </script>
+</body>
+</html>
