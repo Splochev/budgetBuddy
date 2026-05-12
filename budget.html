@@ -210,8 +210,8 @@
                     <h1 style="font-size:1.35rem;font-weight:800;letter-spacing:-0.5px" x-text="$store.budget.t('nav_dashboard')"></h1>
                     <p style="color:var(--text3);font-size:0.82rem;margin-top:2px" x-text="$store.budget.fmtMonthYear($store.budget.filterMonth)"></p>
                   </div>
-                  <div style="display:flex;gap:8px;align-items:center">
-                    <select x-model="$store.budget.filterMonth" style="font-size:0.8rem;padding:6px 26px 6px 10px">
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <select x-model="$store.budget.filterMonth" style="font-size:0.8rem;padding:6px 26px 6px 10px;flex:1;min-width:130px">
                       <template x-for="m in $store.budget.monthOptions" :key="m">
                         <option :value="m" x-text="$store.budget.fmtMonthYear(m)"></option>
                       </template>
