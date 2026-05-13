@@ -235,8 +235,8 @@
                   <div style="font-size:0.68rem;color:var(--text3);margin-top:2px" x-text="'of ' + $store.budget.fmtC($store.budget.totalBalance) + ' total'"></div>
                 </div>
 
-                <!-- Lang + user/logout -->
-                <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <!-- Lang + user/logout (mobile aside only) -->
+                <div class="mobile-only" style="border-top:1px solid var(--border);padding-top:10px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px">
                   <button class="btn btn-ghost btn-sm" @click="$store.budget.setLang($store.budget.lang === 'en' ? 'bg' : 'en')" style="font-size:0.75rem;font-weight:700;padding:4px 10px;letter-spacing:0.5px" x-text="$store.budget.lang === 'en' ? 'EN' : 'BG'"></button>
                   <div style="display:flex;align-items:center;gap:8px;min-width:0">
                     <span style="font-size:0.8rem;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" x-text="$store.budget.user?.displayName || $store.budget.user?.email?.split('@')[0]"></span>
@@ -1163,7 +1163,7 @@
     <style>
       #sidebar { flex-shrink:0; width:0; overflow:hidden; transition:width 0.25s ease; }
       #sidebar.open { width:248px; }
-      @media (max-width:600px) {
+      @media (max-width:800px) {
         #topbar > *:nth-child(n+3) { display:none !important; }
         #sidebar { position:fixed; top:0; left:0; height:100vh; z-index:200; transition:width 0.25s ease, box-shadow 0.25s ease; }
         #sidebar.open { width:min(275px, 85vw); box-shadow:4px 0 32px rgba(0,0,0,0.6); }

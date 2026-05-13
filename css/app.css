@@ -559,4 +559,5 @@ aside[id="sidebar"] {
 }
 @media (min-width: 769px) {
   .sidebar-mobile-overlay { display: none !important; }
+  .mobile-only { display: none !important; }
 }
