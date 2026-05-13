@@ -1,7 +1,7 @@
 // js/store.js — Alpine.js global store for BudgetBudy
 //
 // Net money formula:
-//   freeBalance = totalBalance - unpaidObligations - projectAllocations
+//   freeBalance = totalBalance - unpaidObligations - projectAllocations - currentExpenses + currentIncome
 //
 // Register with: registerStore(Alpine) before Alpine.start()
 
@@ -115,9 +115,11 @@ export function registerStore(Alpine) {
         }, 0);
     },
 
-    // The core metric the user wants to see
+    // The core metric the user wants to see.
+    // Always uses currentMonthStr() — NOT filterMonth — so browsing a past month
+    // never corrupts the live balance figure.
     get freeBalance() {
-      return this.totalBalance - this.unpaidObligations - this.projectAllocations - this.monthlyExpenses;
+      return this.totalBalance - this.unpaidObligations - this.projectAllocations - this.currentExpenses + this.currentIncome;
     },
 
     // ── COMPUTED: MONTHLY ─────────────────────────────────────
@@ -133,6 +135,22 @@ export function registerStore(Alpine) {
       return this.monthlyIncomeTotal - this.monthlyFixedTotal;
     },
 
+    // Current-month totals used by freeBalance (always anchored to today's month)
+    get currentIncome() {
+      const m = currentMonthStr();
+      return this.transactions
+        .filter(t => t.type === "income" && (t.date || "").startsWith(m))
+        .reduce((s, t) => s + (t.amount || 0), 0);
+    },
+
+    get currentExpenses() {
+      const m = currentMonthStr();
+      return this.transactions
+        .filter(t => t.type === "expense" && (t.date || "").startsWith(m))
+        .reduce((s, t) => s + (t.amount || 0), 0);
+    },
+
+    // Filter-month totals used by the transactions view / charts
     get monthlyIncome() {
       return this.transactions
         .filter(t => t.type === "income" && (t.date || "").startsWith(this.filterMonth))
