@@ -84,21 +84,19 @@ export function registerStore(Alpine) {
     },
 
     // Unpaid obligations = all active fixed expenses not yet paid this month
-    // · bills type   → sum of individual bill items not yet toggled
-    // · linkedCategoryId set → budget minus transactions tagged with that category this month (spending limit)
-    // · others       → full amount if paidMonth toggle not set
+    // · bills type          → sum of individual bill items not yet toggled
+    // · linkedCategoryId set → EXCLUDED — actual spending tracked via monthlyExpenses (avoids double-count)
+    // · others              → full amount if paidMonth toggle not set
     get unpaidObligations() {
       const m = currentMonthStr();
       let total = 0;
       for (const f of this.fixedExpenses) {
         if (!f.active) continue;
+        if (f.linkedCategoryId) continue; // handled via monthlyExpenses — don't double-count
         if (f.type === "bills" && f.items && f.items.length > 0) {
           for (const item of f.items) {
             if (item.paidMonth !== m) total += (item.amount || 0);
           }
-        } else if (f.linkedCategoryId) {
-          // Category-tracked: remaining = budget - already spent this month
-          total += this.fixedCategoryRemaining(f);
         } else {
           if (f.paidMonth !== m) total += (f.amount || 0);
         }
