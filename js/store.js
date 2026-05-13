@@ -119,7 +119,7 @@ export function registerStore(Alpine) {
 
     // The core metric the user wants to see
     get freeBalance() {
-      return this.totalBalance - this.unpaidObligations - this.projectAllocations;
+      return this.totalBalance - this.unpaidObligations - this.projectAllocations - this.monthlyExpenses;
     },
 
     // ── COMPUTED: MONTHLY ─────────────────────────────────────
