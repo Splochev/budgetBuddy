@@ -351,6 +351,10 @@ export function registerStore(Alpine) {
 
     // ── INIT ──────────────────────────────────────────────────
     init() {
+      // Remove any stale localStorage cache entries left over from the old caching layer
+      for (const key of Object.keys(localStorage)) {
+        if (key.startsWith("budgetbudy:")) localStorage.removeItem(key);
+      }
       onAuthStateChanged(auth, async (user) => {
         if (user) {
           this.user = user;
